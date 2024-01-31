@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Creato il: Gen 25, 2024 alle 17:02
+-- Creato il: Gen 31, 2024 alle 16:01
 -- Versione del server: 10.4.32-MariaDB
 -- Versione PHP: 8.2.12
 
@@ -140,17 +140,12 @@ INSERT INTO `legenda` (`id`, `nome`, `descrizione`) VALUES
 (6, 'Quantità di pioggia', 'Se piove più di un valore di soglia (in mm/h)'),
 (7, 'Presenza di neve', 'Restituirà \"si\" o \"no\" se ci sarà o meno neve'),
 (8, 'Velocità del vento', 'Se la velocità del vento è superiore a un valore indicato'),
-(9, 'testing', 'valore inserito da python per testing'),
 (10, 'Percentuale di nuvolosita', 'Se il cielo è coperto per più di un valore di soglia'),
 (11, 'Indice di raggi ultravioletti', 'Restituisce il valore di raggi ultravioletti'),
 (12, 'Alba solare', 'Quando accadrà l alba solare'),
 (13, 'Tramonto solare', 'Quando accadrà il tramonto solare'),
 (14, 'Alba lunare', 'Quando accadrà l alba lunare'),
-(15, 'Tramonto lunare', 'Quando accadrà il tramonto lunare'),
-(16, 'testing', 'valore inserito da python per testing'),
-(17, 'testing', 'valore inserito da python per testing'),
-(18, 'testing', 'valore inserito da python per testing'),
-(19, 'testing', 'valore inserito da python per testing');
+(15, 'Tramonto lunare', 'Quando accadrà il tramonto lunare');
 
 -- --------------------------------------------------------
 
@@ -298,11 +293,12 @@ SET @LAST_PAGE = LAST_INSERT_ID();
 --
 
 INSERT INTO `pma__table_coords` (`db_name`, `table_name`, `pdf_page_number`, `x`, `y`) VALUES
-('dsds', 'citta', @LAST_PAGE, 641, 364),
-('dsds', 'cityupdate', @LAST_PAGE, 916, 354),
-('dsds', 'constraints', @LAST_PAGE, 392, 253),
-('dsds', 'legenda', @LAST_PAGE, 646, 212),
-('dsds', 'utente', @LAST_PAGE, 173, 250);
+('dsds', 'citta', @LAST_PAGE, 648, 363),
+('dsds', 'cittainserted', @LAST_PAGE, 413, 178),
+('dsds', 'constraints', @LAST_PAGE, 392, 340),
+('dsds', 'constraintsinserted', @LAST_PAGE, 160, 173),
+('dsds', 'legenda', @LAST_PAGE, 651, 193),
+('dsds', 'utente', @LAST_PAGE, 166, 377);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
