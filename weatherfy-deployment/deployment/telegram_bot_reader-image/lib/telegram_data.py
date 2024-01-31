@@ -1,0 +1,3 @@
+API_URL = "https://api.telegram.org/bot"
+API_TOKEN = "6860123323:AAFxGrDJ4tjaPS0mnkRgNmjNTG6CYBxH1AI"
+API_REQUEST = API_URL + API_TOKEN +"/"
