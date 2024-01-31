@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Creato il: Gen 02, 2024 alle 20:16
+-- Creato il: Gen 25, 2024 alle 17:02
 -- Versione del server: 10.4.32-MariaDB
 -- Versione PHP: 8.2.12
 
@@ -33,15 +33,40 @@ CREATE TABLE `citta` (
   `id` int(11) NOT NULL,
   `nome` varchar(255) NOT NULL,
   `latitudine` double NOT NULL,
+  `longitudine` double NOT NULL,
+  `last_update` date DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Struttura della tabella `cittainserted`
+--
+
+CREATE TABLE `cittainserted` (
+  `id` int(11) NOT NULL,
+  `Nome` varchar(255) NOT NULL,
+  `latitudine` double NOT NULL,
   `longitudine` double NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dump dei dati per la tabella `citta`
+-- Trigger `cittainserted`
 --
-
-INSERT INTO `citta` (`id`, `nome`, `latitudine`, `longitudine`) VALUES
-(1, 'Roma', 41.9028, 43.7696);
+DELIMITER $$
+CREATE TRIGGER `trigger_cityinserted_insert` AFTER INSERT ON `cittainserted` FOR EACH ROW BEGIN
+	INSERT INTO citta (citta.id,citta.nome,citta.latitudine,citta.longitudine)
+    VALUES(NEW.id,NEW.nome,NEW.latitudine,NEW.longitudine);
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `trigger_cityinserted_remove` BEFORE DELETE ON `cittainserted` FOR EACH ROW BEGIN
+	DELETE FROM citta
+    WHERE (id = OLD.id);
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -54,8 +79,41 @@ CREATE TABLE `constraints` (
   `valore` double DEFAULT NULL,
   `cod_legenda` int(11) NOT NULL,
   `cod_utente` int(11) NOT NULL,
+  `cod_citta` int(11) NOT NULL,
+  `last_update` date DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Struttura della tabella `constraintsinserted`
+--
+
+CREATE TABLE `constraintsinserted` (
+  `id` int(11) NOT NULL,
+  `valore` double DEFAULT NULL,
+  `cod_legenda` int(11) NOT NULL,
+  `cod_utente` int(11) NOT NULL,
   `cod_citta` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Trigger `constraintsinserted`
+--
+DELIMITER $$
+CREATE TRIGGER `trigger_constraintsinserted_insert` AFTER INSERT ON `constraintsinserted` FOR EACH ROW BEGIN
+	INSERT INTO constraints (constraints.id,constraints.valore,constraints.cod_legenda,constraints.cod_utente,constraints.cod_citta)
+    VALUES(NEW.id,NEW.valore,NEW.cod_legenda,NEW.cod_utente,NEW.cod_citta);
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `trigger_constraintsinserted_remove` BEFORE DELETE ON `constraintsinserted` FOR EACH ROW BEGIN
+	DELETE FROM constraints
+    WHERE (id = OLD.id);
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -101,11 +159,10 @@ INSERT INTO `legenda` (`id`, `nome`, `descrizione`) VALUES
 --
 
 CREATE TABLE `utente` (
-  `id` int(11) NOT NULL,
+  `chat_id` int(11) NOT NULL,
   `nome` varchar(255) NOT NULL,
   `cognome` varchar(255) NOT NULL,
-  `telegram` varchar(128) NOT NULL,
-  `id_chat` int(11) DEFAULT NULL
+  `telegram` varchar(128) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -119,6 +176,12 @@ ALTER TABLE `citta`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indici per le tabelle `cittainserted`
+--
+ALTER TABLE `cittainserted`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indici per le tabelle `constraints`
 --
 ALTER TABLE `constraints`
@@ -126,6 +189,12 @@ ALTER TABLE `constraints`
   ADD KEY `cod_legenda` (`cod_legenda`),
   ADD KEY `cod_citta` (`cod_citta`),
   ADD KEY `cod_utente` (`cod_utente`);
+
+--
+-- Indici per le tabelle `constraintsinserted`
+--
+ALTER TABLE `constraintsinserted`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indici per le tabelle `legenda`
@@ -137,24 +206,23 @@ ALTER TABLE `legenda`
 -- Indici per le tabelle `utente`
 --
 ALTER TABLE `utente`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `telegram` (`telegram`),
-  ADD UNIQUE KEY `id_chat` (`id_chat`);
+  ADD PRIMARY KEY (`chat_id`),
+  ADD UNIQUE KEY `telegram` (`telegram`);
 
 --
 -- AUTO_INCREMENT per le tabelle scaricate
 --
 
 --
--- AUTO_INCREMENT per la tabella `citta`
+-- AUTO_INCREMENT per la tabella `cittainserted`
 --
-ALTER TABLE `citta`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+ALTER TABLE `cittainserted`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT per la tabella `constraints`
+-- AUTO_INCREMENT per la tabella `constraintsinserted`
 --
-ALTER TABLE `constraints`
+ALTER TABLE `constraintsinserted`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
@@ -167,7 +235,7 @@ ALTER TABLE `legenda`
 -- AUTO_INCREMENT per la tabella `utente`
 --
 ALTER TABLE `utente`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `chat_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- Limiti per le tabelle scaricate
@@ -179,8 +247,8 @@ ALTER TABLE `utente`
 ALTER TABLE `constraints`
   ADD CONSTRAINT `constraints_ibfk_1` FOREIGN KEY (`cod_legenda`) REFERENCES `legenda` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `constraints_ibfk_3` FOREIGN KEY (`cod_citta`) REFERENCES `citta` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `constraints_ibfk_4` FOREIGN KEY (`cod_utente`) REFERENCES `utente` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `constraints_ibfk_5` FOREIGN KEY (`cod_utente`) REFERENCES `utente` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `constraints_ibfk_4` FOREIGN KEY (`cod_utente`) REFERENCES `utente` (`chat_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `constraints_ibfk_5` FOREIGN KEY (`cod_utente`) REFERENCES `utente` (`chat_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 
 --
@@ -193,7 +261,15 @@ USE `phpmyadmin`;
 --
 
 --
+-- Metadati per tabella cittainserted
+--
+
+--
 -- Metadati per tabella constraints
+--
+
+--
+-- Metadati per tabella constraintsinserted
 --
 
 --
@@ -223,6 +299,7 @@ SET @LAST_PAGE = LAST_INSERT_ID();
 
 INSERT INTO `pma__table_coords` (`db_name`, `table_name`, `pdf_page_number`, `x`, `y`) VALUES
 ('dsds', 'citta', @LAST_PAGE, 641, 364),
+('dsds', 'cityupdate', @LAST_PAGE, 916, 354),
 ('dsds', 'constraints', @LAST_PAGE, 392, 253),
 ('dsds', 'legenda', @LAST_PAGE, 646, 212),
 ('dsds', 'utente', @LAST_PAGE, 173, 250);

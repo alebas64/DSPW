@@ -1,0 +1,35 @@
+DELIMITER //
+CREATE TRIGGER trigger_cityinserted_insert
+AFTER INSERT ON cittainserted
+FOR EACH ROW
+BEGIN
+	INSERT INTO citta (citta.id,citta.nome,citta.latitudine,citta.longitudine)
+    VALUES(NEW.id,NEW.nome,NEW.latitudine,NEW.longitudine);
+END
+
+DELIMITER //
+CREATE TRIGGER trigger_cityinserted_remove
+BEFORE DELETE ON cittainserted
+FOR EACH ROW
+BEGIN
+	DELETE FROM citta
+    WHERE (id = OLD.id);
+END
+
+DELIMITER //
+CREATE TRIGGER trigger_constraintsinserted_insert
+AFTER INSERT ON constraintsinserted
+FOR EACH ROW
+BEGIN
+	INSERT INTO constraints (constraints.id,constraints.valore,constraints.cod_legenda,constraints.cod_citta)
+    VALUES(NEW.id,NEW.valore,NEW.cod_legenda,NEW.cod_citta);
+END
+
+DELIMITER //
+CREATE TRIGGER trigger_constraintsinserted_remove
+BEFORE DELETE ON constraintsinserted
+FOR EACH ROW
+BEGIN
+	DELETE FROM constraints
+    WHERE (id = OLD.id);
+END
