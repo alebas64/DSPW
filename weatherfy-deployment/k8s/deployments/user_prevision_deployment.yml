@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user_prevision
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user_prevision
+  template:
+    metadata:
+      labels:
+        app: user_prevision
+    spec:
+      containers:
+      - name: user_prevision
+        ports:
+        - containerPort: 86
+

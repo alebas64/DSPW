@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: user_prevision
+spec:
+  selector:
+    app: user_prevision
+  ports:
+  - protocol: TCP
+    port: 86
+    targetPort: 86

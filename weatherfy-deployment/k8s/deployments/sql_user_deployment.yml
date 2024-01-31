@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sql_user
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sql_user
+  template:
+    metadata:
+      labels:
+        app: sql_user
+    spec:
+      containers:
+      - name: sql_user
+        ports:
+        - containerPort: 87
+        

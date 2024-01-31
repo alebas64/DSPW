@@ -1,0 +1,629 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zoo1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zoo1
+  template:
+    metadata:
+      labels:
+        app: zoo1
+    spec:
+      containers:
+      - name: zoo1
+        image: confluentinc/cp-zookeeper:7.3.2
+        ports:
+        - containerPort: 2181
+        env:
+        - name: ZOOKEEPER_CLIENT_PORT
+          value: "2181"
+        - name: ZOOKEEPER_SERVER_ID
+          value: "1"
+        - name: ZOOKEEPER_SERVERS
+          value: "zoo1:2888:3888"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zoo1
+spec:
+  selector:
+    app: zoo1
+  ports:
+  - protocol: TCP
+    port: 2181
+    targetPort: 2181
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: kafka1
+spec:
+  serviceName: "kafka1"
+  replicas: 3
+  selector:
+    matchLabels:
+      app: kafka1
+  template:
+    metadata:
+      labels:
+        app: kafka1
+    spec:
+      containers:
+      - name: kafka1
+        image: confluentinc/cp-kafka:7.3.2
+        ports:
+        - containerPort: 9092
+          name: kafka
+        - containerPort: 29092
+          name: kafka-docker
+        env:
+        - name: KAFKA_ADVERTISED_LISTENERS
+          value: INTERNAL://kafka1:19092,EXTERNAL://${DOCKER_HOST_IP:-127.0.0.1}:9092,DOCKER://host.docker.internal:29092
+        - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
+          value: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT,DOCKER:PLAINTEXT
+        - name: KAFKA_INTER_BROKER_LISTENER_NAME
+          value: INTERNAL
+        - name: KAFKA_ZOOKEEPER_CONNECT
+          value: "zoo1:2181"
+        - name: KAFKA_BROKER_ID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.index
+        - name: KAFKA_LOG4J_LOGGERS
+          value: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
+        - name: KAFKA_AUTHORIZER_CLASS_NAME
+          value: kafka.security.authorizer.AclAuthorizer
+        - name: KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND
+          value: "true"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka1
+spec:
+  clusterIP: None
+  selector:
+    app: kafka1
+  ports:
+  - protocol: TCP
+    port: 9092
+    targetPort: 9092
+    name: kafka
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka_setupper
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka_setupper
+  template:
+    metadata:
+      labels:
+        app: kafka_setupper
+    spec:
+      containers:
+      - name: kafka_setupper
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka_setupper
+spec:
+  selector:
+    app: kafka_setupper
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+---
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo_input
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo_input
+  template:
+    metadata:
+      labels:
+        app: mongo_input
+    spec:
+      containers:
+      - name: mongo_input
+        ports:
+        - containerPort: 81
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo_input
+spec:
+  selector:
+    app: mongo_input
+  ports:
+  - protocol: TCP
+    port: 81
+    targetPort: 81
+
+
+
+
+---
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo_output
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo_output
+  template:
+    metadata:
+      labels:
+        app: mongo_output
+    spec:
+      containers:
+      - name: mongo_output
+        ports:
+        - containerPort: 82
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo_output
+spec:
+  selector:
+    app: mongo_output
+  ports:
+  - protocol: TCP
+    port: 82
+    targetPort: 82
+
+
+
+---
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo_updater
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo_updater
+  template:
+    metadata:
+      labels:
+        app: mongo_updater
+    spec:
+      containers:
+      - name: mongo_updater
+        ports:
+        - containerPort: 83
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo_updater
+spec:
+  selector:
+    app: mongo_updater
+  ports:
+  - protocol: TCP
+    port: 83
+    targetPort: 83
+
+
+
+---
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: open_weather
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: open_weather
+  template:
+    metadata:
+      labels:
+        app: open_weather
+    spec:
+      containers:
+      - name: open_weather
+        ports:
+        - containerPort: 84
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: open_weather
+spec:
+  selector:
+    app: open_weather
+  ports:
+  - protocol: TCP
+    port: 84
+    targetPort: 84
+
+
+
+---
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sql_operation_constraint
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sql_operation_constraint
+  template:
+    metadata:
+      labels:
+        app: sql_operation_constraint
+    spec:
+      containers:
+      - name: sql_operation_constraint
+        ports:
+        - containerPort: 85
+
+
+---
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: sql_operation_constraint
+spec:
+  selector:
+    app: sql_operation_constraint
+  ports:
+  - protocol: TCP
+    port: 85
+    targetPort: 85
+
+
+
+---
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sql_operation_list
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sql_operation_list
+  template:
+    metadata:
+      labels:
+        app: sql_operation_list
+    spec:
+      containers:
+      - name: sql_operation_list
+        ports:
+        - containerPort: 86
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: sql_operation_list
+spec:
+  selector:
+    app: sql_operation_list
+  ports:
+  - protocol: TCP
+    port: 86
+    targetPort: 86
+
+
+
+---
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sql_user
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sql_user
+  template:
+    metadata:
+      labels:
+        app: sql_user
+    spec:
+      containers:
+      - name: sql_user
+        ports:
+        - containerPort: 87
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: sql_user
+spec:
+  selector:
+    app: sql_user
+  ports:
+  - protocol: TCP
+    port: 87
+    targetPort: 87
+
+
+---
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: telegram_bot_constructor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: telegram_bot_constructor
+  template:
+    metadata:
+      labels:
+        app: telegram_bot_constructor
+    spec:
+      containers:
+      - name: telegram_bot_constructor
+        ports:
+        - containerPort: 88
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: telegram_bot_constructor
+spec:
+  selector:
+    app: telegram_bot_constructor
+  ports:
+  - protocol: TCP
+    port: 88
+    targetPort: 88
+
+
+
+---
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: telegram_bot_reader
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: telegram_bot_reader
+  template:
+    metadata:
+      labels:
+        app: telegram_bot_reader
+    spec:
+      containers:
+      - name: telegram_bot_reader
+        ports:
+        - containerPort: 89
+        
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: telegram_bot_reader
+spec:
+  selector:
+    app: telegram_bot_reader
+  ports:
+  - protocol: TCP
+    port: 89
+    targetPort: 89
+
+
+---
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: telegram_bot_writer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: telegram_bot_writer
+  template:
+    metadata:
+      labels:
+        app: telegram_bot_writer
+    spec:
+      containers:
+      - name: telegram_bot_writer
+        ports:
+        - containerPort: 90
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: telegram_bot_writer
+spec:
+  selector:
+    app: telegram_bot_writer
+  ports:
+  - protocol: TCP
+    port: 90
+    targetPort: 90
+
+
+---
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user_prevision
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user_prevision
+  template:
+    metadata:
+      labels:
+        app: user_prevision
+    spec:
+      containers:
+      - name: user_prevision
+        ports:
+        - containerPort: 86
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: user_prevision
+spec:
+  selector:
+    app: user_prevision
+  ports:
+  - protocol: TCP
+    port: 86
+    targetPort: 86
+
+
+---
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:latest
+        ports:
+        - containerPort: 3306
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: 
+        - name: MYSQL_DATABASE
+          value: dsds
+        - name: MYSQL_USER
+          value: dbuser
+        - name: MYSQL_PASSWORD
+          value:
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+spec:
+  selector:
+    app: mysql
+  ports:
+  - protocol: TCP
+    port: 3306
+    targetPort: 3306
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongodb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb
+  template:
+    metadata:
+      labels:
+        app: mongodb
+    spec:
+      containers:
+      - name: mongodb
+        image: mongo:latest
+        ports:
+        - containerPort: 27017
+        env:
+        - name: MONGO_INITDB_ROOT_USERNAME
+          value: aldo
+        - name: MONGO_INITDB_ROOT_PASSWORD
+          value: wpw_T3w@ADvD@j7
+        - name: MONGO_INITDB_DATABASE
+          value: maindb
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb
+spec:
+  selector:
+    app: mongodb
+  ports:
+  - protocol: TCP
+    port: 27017
+    targetPort: 27017

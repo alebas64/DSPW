@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: sql_operation_list
+spec:
+  selector:
+    app: sql_operation_list
+  ports:
+  - protocol: TCP
+    port: 86
+    targetPort: 86

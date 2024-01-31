@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo_input
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo_input
+  template:
+    metadata:
+      labels:
+        app: mongo_input
+    spec:
+      containers:
+      - name: mongo_input
+        ports:
+        - containerPort: 81

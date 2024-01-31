@@ -1,0 +1,19 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: open_weather
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: open_weather
+  template:
+    metadata:
+      labels:
+        app: open_weather
+    spec:
+      containers:
+      - name: open_weather
+        ports:
+        - containerPort: 84

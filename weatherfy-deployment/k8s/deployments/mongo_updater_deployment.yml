@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo_updater
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo_updater
+  template:
+    metadata:
+      labels:
+        app: mongo_updater
+    spec:
+      containers:
+      - name: mongo_updater
+        ports:
+        - containerPort: 83

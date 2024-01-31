@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo_output
+spec:
+  selector:
+    app: mongo_output
+  ports:
+  - protocol: TCP
+    port: 82
+    targetPort: 82

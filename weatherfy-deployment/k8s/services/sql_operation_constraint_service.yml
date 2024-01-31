@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: sql_operation_constraint
+spec:
+  selector:
+    app: sql_operation_constraint
+  ports:
+  - protocol: TCP
+    port: 85
+    targetPort: 85

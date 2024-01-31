@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: telegram_bot_constructor
+spec:
+  selector:
+    app: telegram_bot_constructor
+  ports:
+  - protocol: TCP
+    port: 88
+    targetPort: 88

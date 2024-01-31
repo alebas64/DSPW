@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sql_operation_constraint
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sql_operation_constraint
+  template:
+    metadata:
+      labels:
+        app: sql_operation_constraint
+    spec:
+      containers:
+      - name: sql_operation_constraint
+        ports:
+        - containerPort: 85

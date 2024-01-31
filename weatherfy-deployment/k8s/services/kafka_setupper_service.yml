@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka_setupper
+spec:
+  selector:
+    app: kafka_setupper
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 81

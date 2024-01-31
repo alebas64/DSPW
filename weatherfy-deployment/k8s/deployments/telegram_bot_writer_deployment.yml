@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: telegram_bot_writer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: telegram_bot_writer
+  template:
+    metadata:
+      labels:
+        app: telegram_bot_writer
+    spec:
+      containers:
+      - name: telegram_bot_writer
+        ports:
+        - containerPort: 90

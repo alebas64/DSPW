@@ -1,0 +1,19 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo_output
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo_output
+  template:
+    metadata:
+      labels:
+        app: mongo_output
+    spec:
+      containers:
+      - name: mongo_output
+        ports:
+        - containerPort: 82

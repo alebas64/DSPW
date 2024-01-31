@@ -1,0 +1,19 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sql_operation_list
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sql_operation_list
+  template:
+    metadata:
+      labels:
+        app: sql_operation_list
+    spec:
+      containers:
+      - name: sql_operation_list
+        ports:
+        - containerPort: 86
